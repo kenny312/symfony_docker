@@ -1,0 +1,46 @@
+version: "3.7"
+services:
+
+    db:
+        image: mysql
+        container_name: db_docker_symfony-dev
+        restart: always
+        volumes:
+            - db-data:/var/lib/mysql
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+        networks:
+            - dev
+
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: phpmyadmin_docker_symfony_dev
+        restart: always
+        depends_on:
+            - db
+        ports:
+            - 8081:80
+        environment:
+            PMA_HOST: db
+        networks:
+            - dev
+
+
+    www:
+        build: php
+        container_name: www_docker_symfony_dev
+        ports:
+          - "8870:80"
+        volumes:
+            - ./php/vhosts:/etc/apache2/sites-enabled
+            - ./:/var/www
+        restart: always
+        networks:
+            - dev
+
+
+networks:
+    dev:
+
+volumes:
+    db-data:            
